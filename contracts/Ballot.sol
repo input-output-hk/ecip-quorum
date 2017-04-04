@@ -22,13 +22,13 @@ contract Vote {
 contract Proposal {
 
     // TODO move to struct
-    string title;
-    string url;
-    string hash;
-    uint ballotEnd;
+    string public title;
+    string public url;
+    string public hash;
+    uint public ballotEnd;
 
-    address voteYes;
-    address voteNo;
+    address public voteYes;
+    address public voteNo;
 
     uint constant startingBlock = block.number;
 
@@ -59,7 +59,7 @@ contract Ballot {
         string title,
         string url,
         string hash,
-        uint ballotEnd) external payable {
+        uint ballotEnd) external payable { //TODO ballotEnd or ballotDuration in blocks?
 
         if (msg.value != requiredDeposit || ballotEnd <= block.number) {
             throw;
