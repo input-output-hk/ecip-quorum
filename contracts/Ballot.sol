@@ -70,8 +70,6 @@ contract Proposal is Ownable {
     }
 
     function kill() onlyOwner {
-        Vote(voteYes).kill();
-        Vote(voteNo).kill();
         selfdestruct(owner);
     }
 
@@ -124,9 +122,11 @@ contract Ballot {
         }
 
         Proposal proposal = Proposal(proposalAddr);
-        if (proposal.ballotEnd() <= block.number) {
+        if (block.number <= proposal.ballotEnd()) {
             BallotAborted(proposalAddr);
         }
+        Vote(proposal.voteYes()).kill();
+        Vote(proposal.voteNo()).kill();
         proposal.kill();
 
     }

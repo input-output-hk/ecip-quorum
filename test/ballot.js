@@ -9,7 +9,13 @@ function assertInvalidJump(err) {
         throw err;
     }
 }
-// TODO remove .equal
+
+function displayGasCost(name, gas, gasCostInGwei = 20, etcPriceInUSD = 2.31) {
+    var gwei = gas * gasCostInGwei;
+    var usd = gwei * etcPriceInUSD * 0.000000001;
+    console.log("    -", name, "| Gas:", gas, "| Gwei:", gwei, "| USD:", usd);
+}
+
 var proposalData = {
     title: "ECIP 42",
     url: "https://iohk.io",
@@ -23,13 +29,13 @@ contract('Ballot', function(accounts) {
     it("should create a voting contract and register votes", function() {
         var ballot;
         var newBallotEvt;
-        return Ballot.deployed()  // deploy contract
+        return Ballot.deployed()                                                                    // deploy contract
             .then(function(instance) {
                 ballot = instance;
-                return ballot.requiredDeposit.call(); // check required deposit
+                return ballot.requiredDeposit.call();                                               // check required deposit
             })
             .then(function(requiredDeposit) {
-                return ballot.beginBallot( // create new ballot
+                return ballot.beginBallot(                                                          // create new ballot
                     proposalData.title,
                     proposalData.url,
                     proposalData.hash,
@@ -37,37 +43,40 @@ contract('Ballot', function(accounts) {
                     { value: requiredDeposit });
             })
             .then(function(result) {
+                displayGasCost("Begin ballot", result.receipt.gasUsed);
                 assert.equal(result.logs.length, 1, "Unexpected number of logs");
                 assert.equal(result.logs[0].event, "NewBallot", "Unexpected type of an event");
                 newBallotEvt = result.logs[0].args;
-                return Proposal.at(newBallotEvt.proposal).hash.call(); // check if proposal was properly saved
+                return Proposal.at(newBallotEvt.proposal).hash.call();                              // check if proposal was properly saved
             })
             .then(function(hash) { // TODO check other fields as well
                 assert.equal(hash, proposalData.hash, "Invalid hash of a proposal data");
             })
             .then(function() {
-                return Vote.at(newBallotEvt.voteYes).sendTransaction({from: voterYes, value: 0}); // vote 'Yes'
+                return Vote.at(newBallotEvt.voteYes).sendTransaction({from: voterYes, value: 0});   // vote 'Yes'
             })
             .then(function(result) {
+                displayGasCost("Vote 'yes'", result.receipt.gasUsed);
                 assert.equal(result.logs.length, 1, "Unexpected number of logs");
                 var evt = result.logs[0];
                 assert.equal(evt.event, "LogVote", "Unexpected type of an event");
                 assert.equal(evt.args.addr, voterYes, "Unexpected addres of a voter");
             })
             .then(function() {
-                return Vote.at(newBallotEvt.voteNo).sendTransaction({from: voterNo, value: 0}); // vote 'No'
+                return Vote.at(newBallotEvt.voteNo).sendTransaction({from: voterNo, value: 0});     // vote 'No'
             })
             .then(function(result) {
+                displayGasCost("Vote 'no'", result.receipt.gasUsed);
                 assert.equal(result.logs.length, 1, "Unexpected number of logs");
                 var evt = result.logs[0];
                 assert.equal(evt.event, "LogVote", "Unexpected type of an event");
                 assert.equal(evt.args.addr, voterNo, "Unexpected addres of a voter");
             })
             .then(function() {
-                return ballot.endBallot();
+                return ballot.endBallot();                                                          // abort ballot
             })
             .then(function(result) {
-                console.log(result);
+                displayGasCost("Abort ballot'", result.receipt.gasUsed);
                 assert.equal(result.logs.length, 1, "Unexpected number of logs");
                 var evt = result.logs[0];
                 assert.equal(evt.event, "BallotAborted", "Unexpected type of an event");
