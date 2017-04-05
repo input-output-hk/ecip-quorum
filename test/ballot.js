@@ -1,5 +1,6 @@
 var Ballot = artifacts.require("Ballot");
 var Proposal = artifacts.require("Proposal");
+var Vote = artifacts.require("Vote");
 
 function assertInvalidJump(err) {
     if (/invalid JUMP/.exec(err.message)) {
@@ -8,7 +9,7 @@ function assertInvalidJump(err) {
         throw err;
     }
 }
-
+// TODO remove .equal
 var proposalData = {
     title: "ECIP 42",
     url: "https://iohk.io",
@@ -19,16 +20,16 @@ var proposalData = {
 contract('Ballot', function(accounts) {
     var voterYes = accounts[1];
     var voterNo = accounts[2];
-    it("should create voting contracts and register votes", function() {
+    it("should create a voting contract and register votes", function() {
         var ballot;
         var newBallotEvt;
-        return Ballot.deployed()
+        return Ballot.deployed()  // deploy contract
             .then(function(instance) {
                 ballot = instance;
-                return ballot.requiredDeposit.call();
+                return ballot.requiredDeposit.call(); // check required deposit
             })
             .then(function(requiredDeposit) {
-                return ballot.beginBallot(
+                return ballot.beginBallot( // create new ballot
                     proposalData.title,
                     proposalData.url,
                     proposalData.hash,
@@ -36,14 +37,31 @@ contract('Ballot', function(accounts) {
                     { value: requiredDeposit });
             })
             .then(function(result) {
-                assert(result.logs[0].event, "NewBallot", "Unexpected type of an event");
                 assert.equal(result.logs.length, 1, "Unexpected number of logs");
+                assert.equal(result.logs[0].event, "NewBallot", "Unexpected type of an event");
                 newBallotEvt = result.logs[0].args;
-                console.log(">>>", newBallotEvt);
-               return Proposal.at(newBallotEvt.proposal).hash.call();
+                return Proposal.at(newBallotEvt.proposal).hash.call(); // check if proposal was properly saved
             })
             .then(function(hash) { // TODO check other fields as well
-               assert.equal(hash, proposalData.hash, "Invalid hash of a proposal data");
+                assert.equal(hash, proposalData.hash, "Invalid hash of a proposal data");
+            })
+            .then(function() {
+                return Vote.at(newBallotEvt.voteYes).sendTransaction({from: voterYes, value: 0}); // vote 'Yes'
+            })
+            .then(function(result) {
+                assert.equal(result.logs.length, 1, "Unexpected number of logs");
+                var evt = result.logs[0];
+                assert.equal(evt.event, "LogVote", "Unexpected type of an event");
+                assert.equal(evt.args.addr, voterYes, "Unexpected addres of a voter");
+            })
+            .then(function() {
+                return Vote.at(newBallotEvt.voteNo).sendTransaction({from: voterNo, value: 0}); // vote 'No'
+            })
+            .then(function(result) {
+                assert.equal(result.logs.length, 1, "Unexpected number of logs");
+                var evt = result.logs[0];
+                assert.equal(evt.event, "LogVote", "Unexpected type of an event");
+                assert.equal(evt.args.addr, voterNo, "Unexpected addres of a voter");
             });
 
     });

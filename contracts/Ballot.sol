@@ -10,7 +10,10 @@ contract Vote {
         name = _name;
     }
 
-    function() {
+    function() payable {
+        if (msg.value > 0) {
+            throw;
+        }
         LogVote(msg.sender);
     }
 
