@@ -14,7 +14,7 @@ var proposalData = {
     title: "ECIP 42",
     url: "https://iohk.io",
     hash: "c935937a8fc17e9f870cd811e228a021",
-    ballotEnd: 4200
+    ballotEnd: 420000
 };
 
 contract('Ballot', function(accounts) {
@@ -62,6 +62,16 @@ contract('Ballot', function(accounts) {
                 var evt = result.logs[0];
                 assert.equal(evt.event, "LogVote", "Unexpected type of an event");
                 assert.equal(evt.args.addr, voterNo, "Unexpected addres of a voter");
+            })
+            .then(function() {
+                return ballot.endBallot();
+            })
+            .then(function(result) {
+                console.log(result);
+                assert.equal(result.logs.length, 1, "Unexpected number of logs");
+                var evt = result.logs[0];
+                assert.equal(evt.event, "BallotAborted", "Unexpected type of an event");
+                assert.equal(evt.args.proposal, newBallotEvt.proposal, "Unexpected addres of a proposal scheduled to delete");
             });
 
     });
