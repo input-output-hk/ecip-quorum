@@ -1,0 +1,114 @@
+* Testing
+#+BEGIN_SRC bash
+testrpc -d qwertyuiop
+truffle test
+#+END_SRC
+* testrpc
+$ testrpc -m 'direct record around winter consider puzzle shaft deposit debate sting later forget'
+EthereumJS TestRPC v3.0.3
+
+trAvailable Accounts
+==================
+(0) 0x581d35a8bedd047ebda23e77f6fe0ea4869a9223
+(1) 0x0219e4ebc7f5c6018f0bbb7ad0a3bc487ff283ac
+(2) 0x4e70c966713ee750cd1f435a96160e4aff1cfba9
+(3) 0x95afdba961235361f811664f6086d14b27aeaf7e
+(4) 0x9d7e800c3a3261950deb4a29a522b1610442656a
+(5) 0x33429fe60e2f864f731e5d1e06abd52d76b300cb
+(6) 0x04a43bace51c2ec9b83681825d5278dab9fc7a7f
+(7) 0x2445b2b7cdc9677a9ba86fb3f90988cc1c10cb1a
+(8) 0x16b1a61d42c2dbc8d142f064f9f387aa4e51bb51
+(9) 0x3ddad03ce1b37594f1f19d3963885a2ad2eaf77c
+
+Private Keys
+==================
+(0) baa86b4aaaf2c52df71833624304ac5b6c7d1576794d8bc5607a130c76a82e40
+(1) 0277f553eb2c7a1bc94ceeb2cb3d4344a2a459e40547721bc1d3e6109d34d5db
+(2) 1e61cfe940040374d40c5659a7a229a9e44b1b2fe58bc849c161fe0770d7346f
+(3) 9320a82f5560c01bae980ed0bc4e28ac9f7f37eb2b4c88930378d198fdaf4bb8
+(4) 1eb432a5da2f479add4d5a7f65d0023a5d292f9e7d474e298629abfae9097561
+(5) daffcfd381b62dcc67293b19d6727ca245534912f625290b21972f6cedda8f25
+(6) 9766037fa171648b0d7d1574eb82f6085c5c9a377f8fe33f73112d532fa9fadb
+(7) 97f4ce8f4773d6332bc3e2492b19a1dbc0e58fa579fde304ce50639bbe98746c
+(8) 5c58c811b1db0df9a36c52ed4b2e042355cc0b27c467b34877406e12ed2b7344
+(9) ead311ddeb3bbb4368eaae3d2b1dbedc6e0bbb4297ba24adb373fe3b176bf871
+
+HD Wallet
+==================
+Mnemonic:      direct record around winter consider puzzle shaft deposit debate sting later forget
+Base HD Path:  m/44'/60'/0'/0/{account_index}
+* Metamask
+qKVspmy7/s}ZpZf?T@jiwiPaUA3qi96c#Y8/GD6jRu+QXHKPKhQecmp6T=HZJeKD
+* Geth
+#+BEGIN_SRC bash
+./geth \
+--rpc --rpcapi eth,web3,personal,admin \
+--datadir ./geth-data \
+--rpcport 8545 \
+--port 30309 \
+--nodiscover \
+--identity "PrivNet" \
+--networkid 1999 \
+init CustomGenesis.json
+
+./geth \
+--datadir ./geth-data \
+--identity "PrivNet" \
+--networkid 1999 \
+--nodiscover \
+--port 30309 \
+--rpc \
+--rpcaddr 0.0.0.0 \
+--rpcapi 'db,net,eth,web3,personal,admin' \
+--rpcport 8545 \
+console
+#+END_SRC
+
+#+BEGIN_SRC
+
+#+END_SRC
+** CustomGenesis
+#+BEGIN_SRC json
+{
+    "nonce": "0x0000000000000042",
+    "timestamp": "0x0",
+    "parentHash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "extraData": "0x0",
+    "gasLimit": "0x8000000",
+    "difficulty": "0x400",
+    "mixhash": "0x0000000000000000000000000000000000000000000000000000000000000000",
+    "coinbase": "0x3333333333333333333333333333333333333333",
+    "alloc": {
+        "0x581d35a8bedd047ebda23e77f6fe0ea4869a9223": { "balance": "99000000000000000000" },
+        "0x0219e4ebc7f5c6018f0bbb7ad0a3bc487ff283ac": { "balance": "99000000000000000000" },
+        "0x4e70c966713ee750cd1f435a96160e4aff1cfba9": { "balance": "99000000000000000000" },
+        "0x95afdba961235361f811664f6086d14b27aeaf7e": { "balance": "99000000000000000000" },
+        "0x9d7e800c3a3261950deb4a29a522b1610442656a": { "balance": "99000000000000000000" },
+        "0x33429fe60e2f864f731e5d1e06abd52d76b300cb": { "balance": "99000000000000000000" },
+        "0x04a43bace51c2ec9b83681825d5278dab9fc7a7f": { "balance": "99000000000000000000" },
+        "0x2445b2b7cdc9677a9ba86fb3f90988cc1c10cb1a": { "balance": "99000000000000000000" },
+        "0x16b1a61d42c2dbc8d142f064f9f387aa4e51bb51": { "balance": "99000000000000000000" },
+        "0x3ddad03ce1b37594f1f19d3963885a2ad2eaf77c": { "balance": "99000000000000000000" }
+    }
+}
+#+END_SRC
+** Accounts
+#+BEGIN_SRC
+> personal.newAccount('123')
+"0x90585a134e5b17da8d2f5454e6cf527cccf192f9"
+"0x3a806a17fdd1761d61a5eceba4a867a27cf853a0"
+"0xea9fa4b0aa938eef69340360646ed5c3d3d8c49e"
+#+END_SRC
+** Mining
+** Deploy contract
+#+BEGIN_SRC javascript
+miner.start(1);
+web3.personal.unlockAccount(web3.personal.listAccounts[0],"123",15000);
+#+END_SRC
+Ballot: 0x3ae1c9f402bf018779b4a50ccdb518f422172bca
+* Truffle
+* Links
+https://github.com/stonecoldpat/anonymousvoting / http://fc17.ifca.ai/preproceedings/paper_80.pdf
+https://followmyvote.com/
+http://blockchaintechcorp.com/blockchain-apparatus/blockchain-voting-machine/
+https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console

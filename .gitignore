@@ -1,0 +1,4 @@
+build/
+geth
+geth-data/
+npm-debug.log

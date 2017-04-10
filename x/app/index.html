@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ballot app</title>
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+        <script src="./app.js"></script>
+    </head>
+    <body>
+        <h1>Create new ballot</h1>
+        <br>
+        <br><label for="title">Title:</label><input type="text" id="title" placeholder="e.g., ECIP 42: Implement SegWit"></input>
+        <br><label for="url">URL:</label><input type="text" id="url"></input>
+        <br><label for="hash">Checksum:</label><input type="text" id="hash"></input>
+        <br><label for="ballotEnd">Ballot end:</label><input type="text" id="ballotEnd" placeholder="420000"></input>
+        <br><br><button id="send" onclick="App.beginBallot()">Create ballot</button>
+        <br>
+        <span id="status"></span>
+        <br>
+        TODO: list of ballots
+    </body>
+</html>
