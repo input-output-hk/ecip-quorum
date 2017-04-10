@@ -1,4 +1,8 @@
+.DS_Store
 build/
 geth
 geth-data/
+node_modules
 npm-debug.log
+yarn-error.log
+

@@ -82,7 +82,9 @@ contract Ballot {
 
     uint256 public constant requiredDeposit = 1 ether;
 
-    mapping(address => address) public ballots; // TODO check if not modifiable from the outside?
+    // TODO allow for more than one ballot created by one account
+    // TODO check if not modifiable from the outside?
+    mapping(address => address) public ballots;
 
     function beginBallot(
         string title,
