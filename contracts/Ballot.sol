@@ -55,12 +55,12 @@ contract Proposal is Ownable {
     uint constant startingBlock = block.number;
 
     function Proposal(
-        string _title,
-        string _url,
-        string _hash,
-        uint _ballotEnd,
-        address _voteYes,
-        address _voteNo) public {
+                      string _title,
+                      string _url,
+                      string _hash,
+                      uint _ballotEnd,
+                      address _voteYes,
+                      address _voteNo) public {
         title = _title;
         url = _url;
         hash = _hash;
@@ -80,33 +80,43 @@ contract Ballot {
     event NewBallot(address proposal, address voteYes, address voteNo);
     event BallotAborted(address proposal);
 
-    uint256 public constant requiredDeposit = 1 ether;
+    uint public requiredDeposit;
+    // in bytes
+    uint public maxDataSize;
 
     // TODO allow for more than one ballot created by one account
     // TODO check if not modifiable from the outside?
     mapping(address => address) public ballots;
 
-    function beginBallot(
-        string title,
-        string url,
-        string hash,
-        uint ballotEnd) external payable {
+    // TODO option to register ballot on the list
+    function Ballot(uint _requiredDeposit, uint _maxDataSize) {
+        if (_requiredDeposit <= 0 || _maxDataSize <= 0) {
+            throw;
+        }
+        requiredDeposit = _requiredDeposit;
+        maxDataSize = _maxDataSize;
+    }
+
+    function beginBallot(string title,
+                         string url,
+                         string hash,
+                         uint ballotEnd) external payable {
 
         if (msg.value != requiredDeposit ||
             ballotEnd <= block.number ||
-            ballots[msg.sender] != 0) {
+            ballots[msg.sender] != 0 ||
+            (bytes(title).length + bytes(url).length + bytes(hash).length) > maxDataSize) {
             throw;
         }
 
         Vote voteYes = new Vote("yes", ballotEnd);
         Vote voteNo = new Vote("no", ballotEnd);
-        Proposal proposal = new Proposal(
-            title,
-            url,
-            hash,
-            ballotEnd,
-            voteYes,
-            voteNo);
+        Proposal proposal = new Proposal(title,
+                                         url,
+                                         hash,
+                                         ballotEnd,
+                                         voteYes,
+                                         voteNo);
 
         ballots[msg.sender] = proposal;
 
@@ -114,7 +124,7 @@ contract Ballot {
 
     }
 
-    function endBallot() {
+    function endBallot() external {
 
         address proposalAddr = ballots[msg.sender];
 

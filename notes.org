@@ -104,6 +104,7 @@ console
 #+BEGIN_SRC javascript
 miner.start(1);
 web3.personal.unlockAccount(web3.personal.listAccounts[0],"123",15000);
+miner.stop();
 #+END_SRC
 Ballot: 0x3ae1c9f402bf018779b4a50ccdb518f422172bca
 * Truffle

@@ -13,7 +13,7 @@ function assertInvalidJump(err) {
 function displayGasCost(name, gas, gasCostInGwei = 20, etcPriceInUSD = 2.31) {
     var gwei = gas * gasCostInGwei;
     var usd = gwei * etcPriceInUSD * 0.000000001;
-    console.log("    -", name, "| Gas:", gas, "| Gwei:", gwei, "| USD:", usd);
+    console.log("    ξ", name, "| Gas:", gas, "| Gwei:", gwei, "| USD:", usd);
 }
 
 var proposalData = {
@@ -123,6 +123,34 @@ contract('Ballot', function(accounts) {
             })
             .then(function(result) {
                 assert(false, "Block number marking the end of ballot is smaller or equal to a current block number but an exception wasn't thrown");
+            })
+            .catch(function(err) {
+                assertInvalidJump(err);
+            });
+    });
+    it("should throw an exception if data sent to the contract exceeds maximum allowed size", function() {
+        var ballot;
+        var requiredDeposit;
+        return Ballot.deployed()
+            .then(function(instance) {
+                ballot = instance;
+                return ballot.requiredDeposit.call();
+            })
+            .then(function(_requiredDeposit) {
+                requiredDeposit = _requiredDeposit;
+                return ballot.maxDataSize.call();
+            })
+            .then(function(maxDataSize) {
+                var longTitle = new Array(maxDataSize - proposalData.url.length - proposalData.hash.length + 2).join('x');
+                return ballot.beginBallot(
+                    longTitle,
+                    proposalData.url,
+                    proposalData.hash,
+                    proposalData.ballotEnd,
+                    { value: requiredDeposit });
+            })
+            .then(function(result) {
+                assert(false, "Data sent to the contract exceeds maximum allowed size but an exception wasn't thrown");
             })
             .catch(function(err) {
                 assertInvalidJump(err);
