@@ -1,6 +1,7 @@
 var Ballot = artifacts.require("Ballot");
 var Proposal = artifacts.require("Proposal");
 var Vote = artifacts.require("Vote");
+var BallotList = artifacts.require("BallotList");
 
 function assertInvalidJump(err) {
     if (/invalid JUMP/.exec(err.message)) {
@@ -17,8 +18,8 @@ function displayGasCost(name, gas, gasCostInGwei = 20, etcPriceInUSD = 2.31) {
 }
 
 var proposalData = {
-    title: "ECIP 42",
-    url: "https://iohk.io",
+    title: "Precompiled contracts for addition and scalar multiplication on the elliptic curve alt_bn128",
+    url: "https://github.com/ethereum/EIPs/pull/213",
     hash: "c935937a8fc17e9f870cd811e228a021",
     ballotEnd: 420000
 };
@@ -35,12 +36,11 @@ contract('Ballot', function(accounts) {
                 return ballot.requiredDeposit.call();                                               // check required deposit
             })
             .then(function(requiredDeposit) {
-                return ballot.beginBallot(                                                          // create new ballot
-                    proposalData.title,
-                    proposalData.url,
-                    proposalData.hash,
-                    proposalData.ballotEnd,
-                    { value: requiredDeposit });
+                return ballot.beginBallot(proposalData.title,                                       // create new ballot
+                                          proposalData.url,
+                                          proposalData.hash,
+                                          proposalData.ballotEnd,
+                                          { value: requiredDeposit });
             })
             .then(function(result) {
                 displayGasCost("Begin ballot", result.receipt.gasUsed);
@@ -82,7 +82,6 @@ contract('Ballot', function(accounts) {
                 assert.equal(evt.event, "BallotAborted", "Unexpected type of an event");
                 assert.equal(evt.args.proposal, newBallotEvt.proposal, "Unexpected addres of a proposal scheduled to delete");
             });
-
     });
     it("should throw an exception if ether received by the contract doesn't match a required deposit", function() {
         var ballot;
@@ -92,12 +91,11 @@ contract('Ballot', function(accounts) {
                 return ballot.requiredDeposit.call();
             })
             .then(function(requiredDeposit) {
-                return ballot.beginBallot(
-                    proposalData.title,
-                    proposalData.url,
-                    proposalData.hash,
-                    proposalData.ballotEnd,
-                    { value: requiredDeposit + 1});
+                return ballot.beginBallot(proposalData.title,
+                                          proposalData.url,
+                                          proposalData.hash,
+                                          proposalData.ballotEnd,
+                                          { value: requiredDeposit + 1});
             })
             .then(function(result) {
                 assert(false, "Ether received by the contract doesn't match a required deposit but an exception wasn't thrown");
@@ -114,12 +112,11 @@ contract('Ballot', function(accounts) {
                 return ballot.requiredDeposit.call();
             })
             .then(function(requiredDeposit) {
-                return ballot.beginBallot(
-                    proposalData.title,
-                    proposalData.url,
-                    proposalData.hash,
-                    0,
-                    { value: requiredDeposit });
+                return ballot.beginBallot(proposalData.title,
+                                          proposalData.url,
+                                          proposalData.hash,
+                                          0,
+                                          { value: requiredDeposit });
             })
             .then(function(result) {
                 assert(false, "Block number marking the end of ballot is smaller or equal to a current block number but an exception wasn't thrown");
@@ -142,12 +139,11 @@ contract('Ballot', function(accounts) {
             })
             .then(function(maxDataSize) {
                 var longTitle = new Array(maxDataSize - proposalData.url.length - proposalData.hash.length + 2).join('x');
-                return ballot.beginBallot(
-                    longTitle,
-                    proposalData.url,
-                    proposalData.hash,
-                    proposalData.ballotEnd,
-                    { value: requiredDeposit });
+                return ballot.beginBallot(longTitle,
+                                          proposalData.url,
+                                          proposalData.hash,
+                                          proposalData.ballotEnd,
+                                          { value: requiredDeposit });
             })
             .then(function(result) {
                 assert(false, "Data sent to the contract exceeds maximum allowed size but an exception wasn't thrown");
