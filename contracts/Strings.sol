@@ -47,7 +47,7 @@ library strings {
         for(; len >= 32; len -= 32) {
             assembly {
                 mstore(dest, mload(src))
-            }
+                    }
             dest += 32;
             src += 32;
         }
@@ -56,9 +56,9 @@ library strings {
         uint mask = 256 ** (32 - len) - 1;
         assembly {
             let srcpart := and(mload(src), not(mask))
-            let destpart := and(mload(dest), mask)
-            mstore(dest, or(destpart, srcpart))
-        }
+                let destpart := and(mload(dest), mask)
+                mstore(dest, or(destpart, srcpart))
+                }
     }
 
     /*
@@ -69,8 +69,8 @@ library strings {
     function toSlice(string self) internal returns (slice) {
         uint ptr;
         assembly {
-            ptr := add(self, 0x20)
-        }
+        ptr := add(self, 0x20)
+                }
         return slice(bytes(self).length, ptr);
     }
 
@@ -116,10 +116,10 @@ library strings {
         // Allocate space for `self` in memory, copy it there, and point ret at it
         assembly {
             let ptr := mload(0x40)
-            mstore(0x40, add(ptr, 0x20))
-            mstore(ptr, self)
-            mstore(add(ret, 0x20), ptr)
-        }
+                mstore(0x40, add(ptr, 0x20))
+                mstore(ptr, self)
+                mstore(add(ret, 0x20), ptr)
+                }
         ret._len = len(self);
     }
 
@@ -207,9 +207,9 @@ library strings {
             uint a;
             uint b;
             assembly {
-                a := mload(selfptr)
-                b := mload(otherptr)
-            }
+            a := mload(selfptr)
+                    b := mload(otherptr)
+                    }
             if (a != b) {
                 // Mask out irrelevant bytes and check again
                 uint mask = ~(2 ** (8 * (32 - shortest + idx)) - 1);
@@ -342,8 +342,8 @@ library strings {
      */
     function keccak(slice self) internal returns (bytes32 ret) {
         assembly {
-            ret := sha3(mload(add(self, 32)), mload(self))
-        }
+        ret := sha3(mload(add(self, 32)), mload(self))
+                }
     }
 
     /*
@@ -364,10 +364,10 @@ library strings {
         bool equal;
         assembly {
             let len := mload(needle)
-            let selfptr := mload(add(self, 0x20))
-            let needleptr := mload(add(needle, 0x20))
-            equal := eq(sha3(selfptr, len), sha3(needleptr, len))
-        }
+                let selfptr := mload(add(self, 0x20))
+                let needleptr := mload(add(needle, 0x20))
+                equal := eq(sha3(selfptr, len), sha3(needleptr, len))
+                }
         return equal;
     }
 
@@ -387,10 +387,10 @@ library strings {
         if (self._ptr != needle._ptr) {
             assembly {
                 let len := mload(needle)
-                let selfptr := mload(add(self, 0x20))
-                let needleptr := mload(add(needle, 0x20))
-                equal := eq(sha3(selfptr, len), sha3(needleptr, len))
-            }
+                    let selfptr := mload(add(self, 0x20))
+                    let needleptr := mload(add(needle, 0x20))
+                    equal := eq(sha3(selfptr, len), sha3(needleptr, len))
+                    }
         }
 
         if (equal) {
@@ -421,9 +421,9 @@ library strings {
         bool equal;
         assembly {
             let len := mload(needle)
-            let needleptr := mload(add(needle, 0x20))
-            equal := eq(sha3(selfptr, len), sha3(needleptr, len))
-        }
+                let needleptr := mload(add(needle, 0x20))
+                equal := eq(sha3(selfptr, len), sha3(needleptr, len))
+                }
 
         return equal;
     }
@@ -445,9 +445,9 @@ library strings {
         if (selfptr != needle._ptr) {
             assembly {
                 let len := mload(needle)
-                let needleptr := mload(add(needle, 0x20))
-                equal := eq(sha3(selfptr, len), sha3(needleptr, len))
-            }
+                    let needleptr := mload(add(needle, 0x20))
+                    equal := eq(sha3(selfptr, len), sha3(needleptr, len))
+                    }
         }
 
         if (equal) {
@@ -468,15 +468,15 @@ library strings {
                 // Optimized assembly for 68 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
-                    let needledata := and(mload(needleptr), mask)
-                    let end := add(selfptr, sub(selflen, needlelen))
-                    ptr := selfptr
-                    loop:
-                    jumpi(exit, eq(and(mload(ptr), mask), needledata))
-                    ptr := add(ptr, 1)
-                    jumpi(loop, lt(sub(ptr, 1), end))
-                    ptr := add(selfptr, selflen)
-                    exit:
+                        let needledata := and(mload(needleptr), mask)
+                        let end := add(selfptr, sub(selflen, needlelen))
+                        ptr := selfptr
+                        loop:
+                        jumpi(exit, eq(and(mload(ptr), mask), needledata))
+                        ptr := add(ptr, 1)
+                        jumpi(loop, lt(sub(ptr, 1), end))
+                        ptr := add(selfptr, selflen)
+                        exit:
                 }
                 return ptr;
             } else {
@@ -506,17 +506,17 @@ library strings {
                 // Optimized assembly for 69 gas per byte on short strings
                 assembly {
                     let mask := not(sub(exp(2, mul(8, sub(32, needlelen))), 1))
-                    let needledata := and(mload(needleptr), mask)
-                    ptr := add(selfptr, sub(selflen, needlelen))
-                    loop:
-                    jumpi(ret, eq(and(mload(ptr), mask), needledata))
-                    ptr := sub(ptr, 1)
-                    jumpi(loop, gt(add(ptr, 1), selfptr))
-                    ptr := selfptr
-                    jump(exit)
-                    ret:
-                    ptr := add(ptr, needlelen)
-                    exit:
+                        let needledata := and(mload(needleptr), mask)
+                        ptr := add(selfptr, sub(selflen, needlelen))
+                        loop:
+                        jumpi(ret, eq(and(mload(ptr), mask), needledata))
+                        ptr := sub(ptr, 1)
+                        jumpi(loop, gt(add(ptr, 1), selfptr))
+                        ptr := selfptr
+                        jump(exit)
+                        ret:
+                        ptr := add(ptr, needlelen)
+                        exit:
                 }
                 return ptr;
             } else {

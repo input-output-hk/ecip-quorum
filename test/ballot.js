@@ -11,10 +11,10 @@ function assertInvalidJump(err) {
     }
 }
 
-function displayGasCost(name, gas, gasCostInGwei = 20, etcPriceInUSD = 2.31) {
+function displayGasCost(name, gas, gasCostInGwei = 20, etcPriceInUSD = 2.63) {
     var gwei = gas * gasCostInGwei;
     var usd = gwei * etcPriceInUSD * 0.000000001;
-    console.log("    ξ", name, "| Gas:", gas, "| Gwei:", gwei, "| USD:", usd);
+    console.log("    ξ", name, "| Gas:", gas, "| Gwei:", gwei, "| USD:", usd, "| (1 ETC =", etcPriceInUSD, "USD)");
 }
 
 var proposalData = {

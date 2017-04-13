@@ -5,11 +5,53 @@ import "./Ownable.sol";
 
 contract BallotList is Ownable {
 
-    uint public maxBallots;
-    string[] public ballots;
+    enum State {Active, Ended, Aborted}
 
-    function addBallot(string title, string url, string hash, uint ballotEnd) external onlyOwner {
-        ballots.push(concatStrings(title, url, hash, ballotEnd));
+    struct BallotData {
+        address proposalAddr;
+        string title;
+        string url;
+        string hash;
+        uint ballotStart;
+        uint ballotEnd;
+        State state;
+        uint weiYes;
+        uint weiNo;
+    }
+
+    BallotData[] public ballots;
+
+    string public ballotsJson = "{\"ballots\": []}";
+
+    function newBallot(address proposalAddr,
+                       string title,
+                       string url,
+                       string hash,
+                       uint ballotEnd) external onlyOwner {
+        for (uint i = 0; i < ballots.length; ++i) {
+            if (ballots[i].proposalAddr == proposalAddr) {
+                throw;
+            }
+        }
+        BallotData memory ballotData = BallotData(proposalAddr, title, url, hash, block.number, ballotEnd, State.Active, 0, 0);
+        ballots.push(ballotData);
+        updateBallotsJson();
+    }
+
+    function abortBallot(uint blockNumber, address proposalAddr) external onlyOwner {
+
+    }
+
+    function endBallot(uint blockNumber, address proposalAddr, uint weiYes, uint weiNo) external onlyOwner {
+
+    }
+
+    function updateBallotsJson() internal {
+        ballotsJson = "asdasdfasdf";
+    }
+
+    function ballotDataToString(BallotData bd) internal returns (string) {
+
     }
 
     function uintToBytes(uint v) constant internal returns (bytes32 ret) {

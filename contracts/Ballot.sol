@@ -114,9 +114,11 @@ contract Ballot {
         }
 
         Proposal proposal = Proposal(proposalAddr);
+
         if (block.number <= proposal.ballotEnd()) {
             BallotAborted(proposalAddr);
         }
+
         Vote(proposal.voteYes()).kill();
         Vote(proposal.voteNo()).kill();
         proposal.kill();
