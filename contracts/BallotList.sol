@@ -1,11 +1,9 @@
 pragma solidity ^0.4.8;
 
-import "./Strings.sol";
+// import "./Strings.sol";
 import "./Ownable.sol";
 
 contract BallotList is Ownable {
-
-    enum State {Active, Ended, Aborted}
 
     struct BallotData {
         address proposalAddr;
@@ -14,14 +12,15 @@ contract BallotList is Ownable {
         string hash;
         uint ballotStart;
         uint ballotEnd;
-        State state;
+        string status;
         uint weiYes;
         uint weiNo;
     }
 
     BallotData[] public ballots;
 
-    string public ballotsJson = "{\"ballots\": []}";
+    // TODO support "s in BallotData
+    string public ballotsJson = "{\"ballots\":[]}";
 
     function newBallot(address proposalAddr,
                        string title,
@@ -33,7 +32,7 @@ contract BallotList is Ownable {
                 throw;
             }
         }
-        BallotData memory ballotData = BallotData(proposalAddr, title, url, hash, block.number, ballotEnd, State.Active, 0, 0);
+        BallotData memory ballotData = BallotData(proposalAddr, title, url, hash, block.number, ballotEnd, "active", 0, 0);
         ballots.push(ballotData);
         updateBallotsJson();
     }
@@ -47,14 +46,103 @@ contract BallotList is Ownable {
     }
 
     function updateBallotsJson() internal {
-        ballotsJson = "asdasdfasdf";
+        if (ballots.length == 0) {
+            ballotsJson = "{\"ballots\":[]}";
+        } else {
+            string memory aggr = ballotDataToString(ballots[0]);
+            for (uint i = 1; i < ballots.length; ++i) {
+                aggr = strConcat(aggr, ",", ballotDataToString(ballots[i]));
+            }
+            ballotsJson = strConcat("{\"ballots\":[", aggr, "]}");
+        }
     }
 
-    function ballotDataToString(BallotData bd) internal returns (string) {
-
+    // This is the ugliest piece of code I have ever written in this millenium.
+    // {\"proposalAddr\":\"X\",\"title\":\"X\",\"url\":\"X\",\"hash\":\"X\",\"ballotStart\":0,\"ballotEnd\":0,\"status\":\"X\",\"weiYes\":0,\"weiNo\":0}
+    function ballotDataToString(BallotData bd) constant internal returns (string) {
+        var a = strConcat("{\"proposalAddr\":\"0x",
+                          addressToString(bd.proposalAddr),
+                          "\",\"title\":\"",
+                          bd.title,
+                          "\",\"url\":\"");
+        var b = strConcat(bd.url,
+                          "\",\"hash\":\"",
+                          bd.hash,
+                          "\",\"ballotStart\":",
+                          uintToString(bd.ballotStart));
+        var c = strConcat(",\"ballotEnd\":",
+                          uintToString(bd.ballotEnd),
+                          ",\"status\":\"",
+                          bd.status,
+                          "\",\"weiYes\":");
+        var d = strConcat(uintToString(bd.weiYes),
+                          ",\"weiNo\":",
+                          uintToString(bd.weiNo),
+                          "}");
+        return strConcat(a, b, c, d);
     }
 
-    function uintToBytes(uint v) constant internal returns (bytes32 ret) {
+    function strConcat(string _a, string _b, string _c, string _d, string _e) constant internal returns (string) {
+        bytes memory _ba = bytes(_a);
+        bytes memory _bb = bytes(_b);
+        bytes memory _bc = bytes(_c);
+        bytes memory _bd = bytes(_d);
+        bytes memory _be = bytes(_e);
+        string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
+        bytes memory babcde = bytes(abcde);
+        uint k = 0;
+        for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
+        for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
+        for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
+        for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
+        for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
+        return string(babcde);
+    }
+
+    function strConcat(string _a, string _b, string _c, string _d) constant internal returns (string) {
+        return strConcat(_a, _b, _c, _d, "");
+    }
+
+    function strConcat(string _a, string _b, string _c) constant internal returns (string) {
+        return strConcat(_a, _b, _c, "", "");
+    }
+
+    function addressToString(address x) constant internal returns (string) {
+        bytes memory s = new bytes(40);
+        for (uint i = 0; i < 20; i++) {
+            byte b = byte(uint8(uint(x) / (2**(8*(19 - i)))));
+            byte hi = byte(uint8(b) / 16);
+            byte lo = byte(uint8(b) - 16 * uint8(hi));
+            s[2*i] = char(hi);
+            s[2*i+1] = char(lo);
+        }
+        return string(s);
+    }
+
+    function char(byte b) constant internal returns (byte c) {
+        if (b < 10) return byte(uint8(b) + 0x30);
+        else return byte(uint8(b) + 0x57);
+    }
+
+    function bytes32ToString(bytes32 x) constant internal returns (string) {
+        bytes memory bytesString = new bytes(32);
+        uint charCount = 0;
+        for (uint j = 0; j < 32; j++) {
+            byte char = byte(bytes32(uint(x) * 2 ** (8 * j)));
+            if (char != 0) {
+                bytesString[charCount] = char;
+                charCount++;
+            }
+        }
+        bytes memory bytesStringTrimmed = new bytes(charCount);
+        for (j = 0; j < charCount; j++) {
+            bytesStringTrimmed[j] = bytesString[j];
+        }
+        return string(bytesStringTrimmed);
+    }
+
+    function uintToString(uint v) constant internal returns (string) {
+        bytes32 ret;
         if (v == 0) {
             ret = '0';
         }
@@ -65,35 +153,7 @@ contract BallotList is Ownable {
                 v /= 10;
             }
         }
-        return ret;
-    }
-
-    // ['title','url','hash',234]
-    function concatStrings(string title, string url, string hash, uint ballotEnd) internal returns(string) {
-        bytes memory titleArr = bytes(title);
-        bytes memory urlArr = bytes(title);
-        bytes memory hashArr = bytes(title);
-        bytes32 ballotEndArr = uintToBytes(ballotEnd);
-        string memory data = new string(11 + titleArr.length + urlArr.length + hashArr.length + ballotEndArr.length);
-        bytes memory dataArr = bytes(data);
-        uint k = 0;
-        uint i = 0;
-        dataArr[k++] = '[';
-        dataArr[k++] = '\'';
-        for (i = 0; i < titleArr.length; i++) dataArr[k++] = titleArr[i];
-        dataArr[k++] = '\'';
-        dataArr[k++] = ',';
-        dataArr[k++] = '\'';
-        for (i = 0; i < urlArr.length; i++) dataArr[k++] = urlArr[i];
-        dataArr[k++] = '\'';
-        dataArr[k++] = ',';
-        dataArr[k++] = '\'';
-        for (i = 0; i < hashArr.length; i++) dataArr[k++] = hashArr[i];
-        dataArr[k++] = '\'';
-        dataArr[k++] = ',';
-        for (i = 0; i < ballotEndArr.length; i++) dataArr[k++] = ballotEndArr[i];
-        dataArr[k++] = ']';
-        return string(dataArr);
+        return bytes32ToString(ret);
     }
 
 }

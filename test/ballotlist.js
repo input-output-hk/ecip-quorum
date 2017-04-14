@@ -85,7 +85,7 @@ contract('BallotList', function(accounts) {
             .then(function(ballotsJson) {
                 // var actual = JSON.parse(ballotsJson);
                 // var expected = {ballots: []};
-                // console.log(">>>", actual);
+                 console.log(">>>", ballotsJson);
                 // assert.deepStrictEqual(actual, expected, "List of ballots should be empty");
             });
     });
