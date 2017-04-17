@@ -103,13 +103,22 @@ console
 ** Deploy contract
 #+BEGIN_SRC javascript
 miner.start(1);
-web3.personal.unlockAccount(web3.personal.listAccounts[0],"123",15000);
+web3.personal.unlockAccount(web3.personal.listAccounts[0],"123",150000000);
 miner.stop();
 #+END_SRC
 Ballot: 0x3ae1c9f402bf018779b4a50ccdb518f422172bca
+* Mist
+#+BEGIN_SRC bash
+/Applications/Mist.app/Contents/MacOS/Mist --rpc "http://localhost:8545" --datadir ./geth-data/
+#+END_SRC
 * Truffle
+#+BEGIN_SRC bash
+npm run dev
+#+END_SRC
+
 * Links
 https://github.com/stonecoldpat/anonymousvoting / http://fc17.ifca.ai/preproceedings/paper_80.pdf
 https://followmyvote.com/
 http://blockchaintechcorp.com/blockchain-apparatus/blockchain-voting-machine/
 https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console
+https://github.com/ethereum/wiki/wiki/JavaScript-API
