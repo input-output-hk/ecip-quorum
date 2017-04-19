@@ -27,16 +27,20 @@ var proposalData = {
 contract('Ballot', function(accounts) {
     var voterYes = accounts[1];
     var voterNo = accounts[2];
+    var ballotId = new Date().getTime();
     it("should create a voting contract and register votes", function() {
         var ballot;
         var newBallotEvt;
+        var thisBallotId;
         return Ballot.deployed()                                                                    // deploy contract
             .then(function(instance) {
                 ballot = instance;
                 return ballot.requiredDeposit.call();                                               // check required deposit
             })
             .then(function(requiredDeposit) {
-                return ballot.beginBallot(proposalData.title,                                       // create new ballot
+                thisBallotId = ballotId++;
+                return ballot.beginBallot(thisBallotId,
+                                          proposalData.title,                                       // create new ballot
                                           proposalData.url,
                                           proposalData.hash,
                                           proposalData.ballotEnd,
@@ -73,7 +77,7 @@ contract('Ballot', function(accounts) {
                 assert.equal(evt.args.addr, voterNo, "Unexpected addres of a voter");
             })
             .then(function() {
-                return ballot.endBallot();                                                          // abort ballot
+                return ballot.endBallot(thisBallotId);                                             // abort ballot
             })
             .then(function(result) {
                 displayGasCost("Abort ballot'", result.receipt.gasUsed);
@@ -91,7 +95,8 @@ contract('Ballot', function(accounts) {
                 return ballot.requiredDeposit.call();
             })
             .then(function(requiredDeposit) {
-                return ballot.beginBallot(proposalData.title,
+                return ballot.beginBallot(ballotId++,
+                                          proposalData.title,
                                           proposalData.url,
                                           proposalData.hash,
                                           proposalData.ballotEnd,
@@ -112,7 +117,8 @@ contract('Ballot', function(accounts) {
                 return ballot.requiredDeposit.call();
             })
             .then(function(requiredDeposit) {
-                return ballot.beginBallot(proposalData.title,
+                return ballot.beginBallot(ballotId++,
+                                          proposalData.title,
                                           proposalData.url,
                                           proposalData.hash,
                                           0,
@@ -139,7 +145,8 @@ contract('Ballot', function(accounts) {
             })
             .then(function(maxDataSize) {
                 var longTitle = new Array(maxDataSize - proposalData.url.length - proposalData.hash.length + 2).join('x');
-                return ballot.beginBallot(longTitle,
+                return ballot.beginBallot(ballotId++,
+                                          longTitle,
                                           proposalData.url,
                                           proposalData.hash,
                                           proposalData.ballotEnd,

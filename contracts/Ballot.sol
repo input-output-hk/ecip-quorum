@@ -65,12 +65,9 @@ contract Ballot {
     event BallotAborted(address proposal);
 
     uint public requiredDeposit;
-    // in bytes
     uint public maxDataSize;
 
-    // TODO allow for more than one ballot created by one account
-    // TODO check if not modifiable from the outside?
-    mapping(address => address) public ballots;
+    mapping(uint => address) public ballots;
 
     // TODO option to register ballot on the list
     function Ballot(uint _requiredDeposit, uint _maxDataSize) {
@@ -83,14 +80,15 @@ contract Ballot {
         maxDataSize = _maxDataSize;
     }
 
-    function beginBallot(string title,
+    function beginBallot(uint id,
+                         string title,
                          string url,
                          string hash,
                          uint ballotEnd) external payable {
 
         if (msg.value != requiredDeposit ||
             ballotEnd <= block.number ||
-            ballots[msg.sender] != 0 ||
+            ballots[id] != 0 ||
             (bytes(title).length + bytes(url).length + bytes(hash).length) > maxDataSize) {
             throw;
         }
@@ -98,15 +96,15 @@ contract Ballot {
         Vote voteYes = new Vote("yes", ballotEnd);
         Vote voteNo = new Vote("no", ballotEnd);
         Proposal proposal = new Proposal(title, url, hash, ballotEnd, voteYes, voteNo);
-        ballots[msg.sender] = proposal;
+        ballots[id] = proposal;
 
         NewBallot(proposal, voteYes, voteNo);
 
     }
 
-    function endBallot() external {
+    function endBallot(uint id) external {
 
-        address proposalAddr = ballots[msg.sender];
+        address proposalAddr = ballots[id];
 
         if (proposalAddr == 0 ||
             !msg.sender.send(requiredDeposit)) {
