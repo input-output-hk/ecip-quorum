@@ -14,12 +14,22 @@ contract Vote is Ownable {
     }
 
     function() payable {
-        if (msg.value > 0 ||
-            block.number > ballotEnd) {
+        vote();
+    }
+
+    function vote() payable {
+        if (msg.value > 0) {
+            if (!msg.sender.send(msg.value)) {
+                throw;
+            }
+        }
+        if (block.number > ballotEnd) {
             throw;
         }
         LogVote(msg.sender);
     }
+
+
 
     function kill() onlyOwner {
         selfdestruct(owner);

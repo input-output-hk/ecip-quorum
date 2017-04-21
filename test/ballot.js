@@ -59,17 +59,17 @@ contract('Ballot', function(accounts) {
                 return Vote.at(newBallotEvt.voteYes).sendTransaction({from: voterYes, value: 0});   // vote 'Yes'
             })
             .then(function(result) {
-                displayGasCost("Vote 'yes'", result.receipt.gasUsed);
+                displayGasCost("Vote 'yes' (send transaction)", result.receipt.gasUsed);
                 assert.equal(result.logs.length, 1, "Unexpected number of logs");
                 var evt = result.logs[0];
                 assert.equal(evt.event, "LogVote", "Unexpected type of an event");
                 assert.equal(evt.args.addr, voterYes, "Unexpected addres of a voter");
             })
             .then(function() {
-                return Vote.at(newBallotEvt.voteNo).sendTransaction({from: voterNo, value: 0});     // vote 'No'
+                return Vote.at(newBallotEvt.voteNo).vote({from: voterNo});                         // vote 'No'
             })
             .then(function(result) {
-                displayGasCost("Vote 'no'", result.receipt.gasUsed);
+                displayGasCost("Vote 'no' (call method)", result.receipt.gasUsed);
                 assert.equal(result.logs.length, 1, "Unexpected number of logs");
                 var evt = result.logs[0];
                 assert.equal(evt.event, "LogVote", "Unexpected type of an event");
