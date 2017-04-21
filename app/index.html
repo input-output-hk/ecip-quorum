@@ -5,7 +5,7 @@
         <title>Proposals - Ethereum Classic</title>
         <link href="https://fonts.googleapis.com/css?family=Biryani:300,400" rel="stylesheet">
         <script src="http://code.jquery.com/jquery-1.12.0.min.js"></script>
-        <script type="text/JavaScript" src="./app.js"></script>
+        <script type="text/javascript" src="./app.js"></script>
     </head>
     <body>
         <div class="container">
@@ -13,23 +13,24 @@
                 <img id="logo" src="img/etc-logo.png" alt="logo ethereum classic">
             </div>
 
-            <!--form-->
             <p class="title">create new ballot</p>
-            <form action="#" method="post">
+            <!--form-->
+            <div id="ballotForm">
+                <label for="id"></label><br>
+                <input type="text" placeholder="Id... [number > 0]" id="ballotId"><br>
                 <label for="title"></label><br>
-                <input type="text" placeholder="Title..." id="title-inp"><br>
+                <input type="text" placeholder="Title..." id="title"><br>
                 <label for="url"></label><br>
-                <input type="text" placeholder="Url..." id="url-inp"/><br>
+                <input type="text" placeholder="Url..." id="url"/><br>
                 <label for="hash"></label><br>
-                <input type="text" placeholder="Hash..." id="hash-inp" /><br>
+                <input type="text" placeholder="Hash..." id="hash" /><br>
                 <label for="endDate"></label><br>
-                <input type="text" placeholder="End date..." id="endDate-inp"/><span class="normalDateEnd">Standard date: 2017-12-13 13:24:56</span><br>
+                <input type="text" placeholder="End date..." id="ballotEnd"/><span class="normalDateEnd">Estimated end date: 2017-12-13 13:24:56</span><br>
                 <div class="error"></div><br>
-                <input type="submit" value="create ballot" />
-            </form>
-
+                <input type="submit" value="create ballot" onclick="App.beginBallot()" />
+            </div>
             <!--proposals-->
-            <p class="title">list of ballots</p>
+            <p class="title">List of ballots</p>
             <div id="proposalList">
                 <table class="proposalTable">
                     <tr id="title-out">

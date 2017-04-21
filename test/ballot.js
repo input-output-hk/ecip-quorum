@@ -1,7 +1,6 @@
 var Ballot = artifacts.require("Ballot");
 var Proposal = artifacts.require("Proposal");
 var Vote = artifacts.require("Vote");
-var BallotList = artifacts.require("BallotList");
 
 function assertInvalidJump(err) {
     if (/invalid JUMP/.exec(err.message)) {
@@ -35,6 +34,9 @@ contract('Ballot', function(accounts) {
         return Ballot.deployed()                                                                    // deploy contract
             .then(function(instance) {
                 ballot = instance;
+                console.log(">>> DEPLOYED? ", Ballot.isDeployed());
+                console.log(">>> DEFAULTS ", Ballot.defaults());
+                console.log(">>> NETWORK ", Ballot.detectNetwork());
                 return ballot.requiredDeposit.call();                                               // check required deposit
             })
             .then(function(requiredDeposit) {

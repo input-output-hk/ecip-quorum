@@ -1,3 +1,9 @@
+* DONE remove strings and BallotList
+CLOSED: [2017-04-20 czw 18:05]
+* TODO Vote contract should never throw an exception
+* TODO Vote contract shoult return all received ether
+* TODO Test UI for invalid input
+* TODO Listen for log events from Vote contracts and log them in UI
 * Testing
 #+BEGIN_SRC bash
 testrpc -d qwertyuiop
@@ -51,7 +57,7 @@ qKVspmy7/s}ZpZf?T@jiwiPaUA3qi96c#Y8/GD6jRu+QXHKPKhQecmp6T=HZJeKD
 --networkid 1999 \
 init CustomGenesis.json
 
-./geth \
+./geth-etc \
 --datadir ./geth-data \
 --identity "PrivNet" \
 --networkid 1999 \
@@ -61,6 +67,8 @@ init CustomGenesis.json
 --rpcaddr 0.0.0.0 \
 --rpcapi 'db,net,eth,web3,personal,admin' \
 --rpcport 8545 \
+--unlock 0x90585A134e5B17DA8d2F5454e6CF527ccCF192f9 \
+--verbosity 2 \
 console
 #+END_SRC
 
@@ -106,7 +114,9 @@ miner.start(1);
 web3.personal.unlockAccount(web3.personal.listAccounts[0],"123",150000000);
 miner.stop();
 #+END_SRC
-Ballot: 0x3ae1c9f402bf018779b4a50ccdb518f422172bca
+** ETH Geth
+https://ethereum.github.io/go-ethereum/downloads/
+v1.6.0-stable-facc47cb
 * Mist
 #+BEGIN_SRC bash
 /Applications/Mist.app/Contents/MacOS/Mist --rpc "http://localhost:8545" --datadir ./geth-data/
@@ -122,3 +132,89 @@ https://followmyvote.com/
 http://blockchaintechcorp.com/blockchain-apparatus/blockchain-voting-machine/
 https://github.com/ethereum/go-ethereum/wiki/JavaScript-Console
 https://github.com/ethereum/wiki/wiki/JavaScript-API
+* Listening to log events
+#+BEGIN_SRC javascript
+var Ballot = eth.contract([{"constant":true,"inputs":[{"name":"","type":"address"}],"name":"ballots","outputs":[{"name":"","type":"address"}],"payable":false,"type":"function"},{"constant":false,"inputs":[],"name":"endBallot","outputs":[],"payable":false,"type":"function"},{"constant":false,"inputs":[{"name":"title","type":"string"},{"name":"url","type":"string"},{"name":"hash","type":"string"},{"name":"ballotEnd","type":"uint256"}],"name":"beginBallot","outputs":[],"payable":true,"type":"function"},{"constant":true,"inputs":[],"name":"maxDataSize","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"constant":true,"inputs":[],"name":"requiredDeposit","outputs":[{"name":"","type":"uint256"}],"payable":false,"type":"function"},{"inputs":[{"name":"_requiredDeposit","type":"uint256"},{"name":"_maxDataSize","type":"uint256"}],"payable":false,"type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"proposal","type":"address"},{"indexed":false,"name":"voteYes","type":"address"},{"indexed":false,"name":"voteNo","type":"address"}],"name":"NewBallot","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"proposal","type":"address"}],"name":"BallotAborted","type":"event"}]);
+var ballot = Ballot.at("0x37914fe296a2aea18c8a108ab2a72826c84ea095");
+var f0 = ballot.allEvents({fromBlock: 0}).watch(function(error, result){
+    if (!error) {
+        console.log(">>> RESULT:", JSON.stringify(result));
+    } else {
+       console.log(">>> ERROR:", JSON.stringify(error));
+    }
+});
+#+END_SRC
+* Addresses on local network
+Ownable: 0xf41bb478a45bf90ef4e6dd3bf4ff39cfe44d7dc8
+Ballot: 0xf297a6dc229691346e1850373cadabe7333e30d0
+* Additional software
+npm install -g babel-cli
+npm install -g eslint
+npm install -g webpack
+* Notes
+geth --rpc --rpccorsdomain "https://wallet.ethereum.org"
+
+Optional add: --unlock <yourAccount>.
+* Start
+#+BEGIN_SRC bash
+./geth-etc \
+--rpc --rpcapi eth,web3,personal,admin \
+--datadir ./geth-data \
+--rpcport 8545 \
+--port 30309 \
+--nodiscover \
+--identity "PrivNet" \
+--networkid 1999 \
+init CustomGenesis.json
+
+./geth-etc \
+--datadir ./geth-data \
+--identity "PrivNet" \
+--networkid 1999 \
+--nodiscover \
+--port 30309 \
+--rpc \
+--rpcaddr 0.0.0.0 \
+--rpcapi 'db,net,eth,web3,personal,admin' \
+--rpcport 8545 \
+--verbosity 2 \
+console
+
+personal.newAccount('123')
+
+exit
+
+mkdir geth-data/keystore/geth-data
+ln -s ../../keystore/
+cd -
+
+./geth-etc \
+--datadir ./geth-data \
+--identity "PrivNet" \
+--networkid 1999 \
+--nodiscover \
+--port 30309 \
+--rpc \
+--rpcaddr 0.0.0.0 \
+--rpcapi 'db,net,eth,web3,personal,admin' \
+--rpcport 8545 \
+--rpccorsdomain "*" \
+--unlock 0x71d35eed4f0c716ccfe6a03718c5e8d43e1dcb7d \
+--verbosity 2 \
+console
+
+miner.start()
+
+truffle compile
+
+truffle migrate --reset
+
+/Applications/Mist.app/Contents/MacOS/Mist --rpc "http://localhost:8545" --datadir ./geth-data/
+
+npm run dev
+
+# Connect!
+
+
+
+#+END_SRC

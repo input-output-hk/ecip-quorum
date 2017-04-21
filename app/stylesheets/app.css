@@ -30,7 +30,7 @@ html, body, ul, li, div, p, a, form, section, footer, header, nav, img, input, h
   text-align: center;
 }
 /*form*/
-form {
+#ballotForm {
   margin: 0 50px 50px 50px;
 }
 input[type=text] {
@@ -43,7 +43,7 @@ input[type=text] {
   box-sizing: border-box;
   outline: none;
 }
-#endDate-inp {
+#ballotEnd {
   width: 50%;
 }
 input[type=text]:focus {
