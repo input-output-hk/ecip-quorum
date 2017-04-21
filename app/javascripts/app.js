@@ -5,22 +5,20 @@ import ballot_artifacts from '../../build/contracts/Ballot.json';
 
 var Ballot = contract(ballot_artifacts);
 
-var accounts;
 var account;
 
 window.App = {
 
     setAccounts: function() {
-        web3.eth.getAccounts(function(err, accs) {
-            if (err != null) {
+        web3.eth.getAccounts(function(err, accounts) {
+            if (err) {
                 alert("There was an error fetching your accounts.");
                 return;
             }
-            if (accs.length == 0) {
+            if (!accounts.length) {
                 alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
                 return;
             }
-            accounts = accs;
             account = accounts[0];
         });
     },
@@ -29,18 +27,7 @@ window.App = {
         console.log(">>> Starting");
         var self = this;
         Ballot.setProvider(web3.currentProvider);
-        web3.eth.getAccounts(function(err, accs) {
-            if (err != null) {
-                alert("There was an error fetching your accounts.");
-                return;
-            }
-            if (accs.length == 0) {
-                alert("Couldn't get any accounts! Make sure your Ethereum client is configured correctly.");
-                return;
-            }
-            accounts = accs;
-            account = accounts[0];
-        });
+        this.setAccounts();
         // Ballot.at('0x3c3E95825A00AA544f38AB1cF1629d93bbc30667').then(function(instance) {
         //     console.log(">>> X: ", instance);
         //     instance.allEvents({fromBlock: 0}).watch(function(error, result){
@@ -71,7 +58,7 @@ window.App = {
         this.setStatus("Creating new ballot... (please wait)");
         var ballot;
         console.log("!!!");
-        Ballot.at('0x3c3E95825A00AA544f38AB1cF1629d93bbc30667').then(function(instance) {
+        Ballot.deployed().then(function(instance) {
             ballot = instance;
             console.log(">>>>", ballotId, title, url, hash, ballotEnd, web3.toWei(1, "ether"));
             console.log(">>> DEPLOYED? ", Ballot.isDeployed());
