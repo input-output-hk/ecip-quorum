@@ -1,9 +1,19 @@
 * DONE remove strings and BallotList
 CLOSED: [2017-04-20 czw 18:05]
-* TODO Vote contract should never throw an exception
-* TODO Vote contract shoult return all received ether
-* TODO Test UI for invalid input
-* TODO Listen for log events from Vote contracts and log them in UI
+* DONE Vote contract should never throw an exception
+CLOSED: [2017-04-21 ptk 15:47]
+* DONE Vote contract should return all received ether
+CLOSED: [2017-04-21 ptk 15:47]
+* DONE Vot contract should have a public method for voting
+CLOSED: [2017-04-21 ptk 15:47]
+* TODO Manual describing voting procedure
+* TODO Update wiki
+* UI
+** TODO Listen for log events from Vote contracts and log them in UI
+** TODO Test UI for invalid input
+** TODO Create new ballot - hidden by default
+** TODO Add information that 1 ETC will be sent to the Ballot contract
+** TODO Display active account address
 * TODO Push ABIs
 * Testing
 #+BEGIN_SRC bash
