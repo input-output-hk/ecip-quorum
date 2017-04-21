@@ -34,9 +34,6 @@ contract('Ballot', function(accounts) {
         return Ballot.deployed()                                                                    // deploy contract
             .then(function(instance) {
                 ballot = instance;
-                console.log(">>> DEPLOYED? ", Ballot.isDeployed());
-                console.log(">>> DEFAULTS ", Ballot.defaults());
-                console.log(">>> NETWORK ", Ballot.detectNetwork());
                 return ballot.requiredDeposit.call();                                               // check required deposit
             })
             .then(function(requiredDeposit) {
