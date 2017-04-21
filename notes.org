@@ -4,6 +4,7 @@ CLOSED: [2017-04-20 czw 18:05]
 * TODO Vote contract shoult return all received ether
 * TODO Test UI for invalid input
 * TODO Listen for log events from Vote contracts and log them in UI
+* TODO Push ABIs
 * Testing
 #+BEGIN_SRC bash
 testrpc -d qwertyuiop
@@ -155,6 +156,12 @@ npm install -g webpack
 geth --rpc --rpccorsdomain "https://wallet.ethereum.org"
 
 Optional add: --unlock <yourAccount>.
+* Problems
+** Set max gas in Mist
+** Connect to Dapp in Mist
+** {from: account}
+** Newest stable geth requires a different syntax for specifying a genesis block.
+** [UNSOLVED] condition race in App.start
 * Start
 #+BEGIN_SRC bash
 ./geth-etc \
