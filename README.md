@@ -31,7 +31,7 @@ truffle compile
 
 ### Test ###
 
-We'll use TestRPC node to run tests. _Consider running it as a daemon (`&`), in a separate console or in a [Docker container](https://github.com/ethereumjs/testrpc#docker).
+We'll use TestRPC node to run tests. *Consider running it as a daemon (`&`), in a separate console or in a [Docker container](https://github.com/ethereumjs/testrpc#docker).*
 
 ``` bash
 testrpc
@@ -47,7 +47,7 @@ This section describes how to set up a private test net on a `geth` node, deploy
 
 We'll use a [CustomGenesis.json](https://github.com/input-output-hk/ecip-quorum/blob/master/CustomGenesis.json) to create a testnet.
 
-**WARNING:** newer versions of geth may require a slightly different syntax.
+**WARNING:** newer versions of `geth` may require a slightly different syntax.
 
 Initialize a testnet:
 
@@ -135,6 +135,6 @@ Run Mist which connects to the local testnet:
 
 In Mist, navigate to http://localhost:8080.
 
-**CONNECT your account to the dapp** (_hit CONNECT button in the top right corner of the window_).
+CONNECT your account to the dapp (_hit CONNECT button in the top right corner of the window_).
 
 Now, you are ready to create your first ballot.
